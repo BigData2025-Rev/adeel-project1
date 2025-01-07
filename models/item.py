@@ -27,3 +27,10 @@ class Item:
     
     def weight_to_shipprice(self):
         return self.weight * 0.1
+    
+    def to_dict(self):
+        return self.__dict__
+    
+    @classmethod
+    def from_dict(self, cls, data):
+        return cls(**data)
