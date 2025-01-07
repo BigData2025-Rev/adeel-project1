@@ -10,6 +10,7 @@ class Account:
         self.country = "United States"
         self.points = points
         self.admin = admin
+        self.cart = []
     
     def __str__(self):
         return f"{self.name} - {self.email}\n{self.address}\n{self.city}, {self.state} {self.zip}\nADMIN ACCOUNT" if self.admin else f"{self.name} - {self.email}\n{self.address}\n{self.city}, {self.state} {self.zip}\nPoints: {self.points}"

@@ -2,7 +2,6 @@ from pymongo.mongo_client import MongoClient
 from dotenv import load_dotenv
 from os import getenv
 
-
 # Load environment variables from .env
 load_dotenv()
 
@@ -15,7 +14,8 @@ if not uri:
 def get_database():
     try:
         client = MongoClient(uri)
-        db = client["shopping"]
+        db = client["shopping_app"]
+        
         return db
     except Exception as e:
         print(e)
