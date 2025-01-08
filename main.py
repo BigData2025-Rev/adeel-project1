@@ -18,7 +18,13 @@ def main():
         if account is not None:
             Messages.standard(f"Welcome {account.first_name} {account.last_name}!")
             while True:
-                menu_option = Menu.main_menu(account)
+                menu_option = Menu.store_menu(account)
+                
+                if (menu_option == 1):
+                    Menu.product_catagoery_menu()
+                elif (menu_option == 2):
+                    Menu.view_cart_menu(account)
+                
             
 if __name__ == "__main__":
     main()

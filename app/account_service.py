@@ -23,11 +23,11 @@ class AccountService:
         if account:
             hashed_password = account["password"].encode("utf-8")
             if bcrypt.checkpw(password.encode("utf-8"), hashed_password):
-                return Account.from_dict(account)
+                return Account.from_dict(Account, account)
         return None
     
     def add_to_cart(self, account, item):
         self.db.update_one({"_id": account._id}, {"$push": {"cart": item.to_dict()}})
 
     def get_cart(self, account):
-        return [Item.from_dict(item) for item in self.db.fine_one({"_id": account._id})["cart"]]
+        return [Item.from_dict(item) for item in self.db.find_one({"_id": account._id})["cart"]]

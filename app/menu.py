@@ -7,11 +7,13 @@ import os
 
 AccountService = AccountService(accounts)
 
-INVALID_OPTION = "Invalid option! Please try again...\n\n"
-PASS_DO_NOT_MATCH = "Passwords do not match! Please try again...\n\n"
-PASSWORD_ERROR = "Too many failed attemps, please try again later...\n\n"
-STATE_ERROR = "Please enter a valid two character state abbreviation\n\n"
-EMAIL_TAKEN = "Email already in use! Please login instead\n\n"
+INVALID_OPTION = "Invalid option! Please try again...\n"
+PASS_DO_NOT_MATCH = "Passwords do not match! Please try again...\n"
+PASSWORD_ERROR = "Too many failed attemps, please try again later...\n"
+STATE_ERROR = "Please enter a valid two character state abbreviation\n"
+EMAIL_TAKEN = "Email already in use! Please login instead\n"
+
+catagory = ["Laptops", "Phones", "Watches", "Headphones", "Accessories", "All Products"]
 
 state_abbreviations = [
     "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
@@ -159,10 +161,38 @@ class Menu:
                 continue
             return user_input
     
+    def view_product_catagory_menu(catagory_number) -> int:
+        clear_console()
+        while True:
+            Messages.title(catagory[catagory_number - 1])
+            Messages.menu_option(1, "View Products")
+            Messages.menu_option(2, "Search Products")
+            Messages.menu_option(0, "Return to Menu")
+
+            user_input = int(input("Enter option: "))
+            if user_input not in [1, 2, 0]:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            return user_input
+    
     def view_cart_menu(account):
         clear_console
         while True:
             Messages.title("CART")
             cart = AccountService.get_cart(account)
+            if not cart:
+                Messages.standard("Your cart is empty!")
+                Messages.pause()
+                break
             for item in cart:
-                pass
+                print(item)
+            print("\n")
+            total = sum(item.price for item in cart)
+            shipping = sum(item.weight_to_shipprice() for item in cart) 
+            if shipping > 20:
+                shipping = 20
+            print("Sub Total: " + "{:.2f}".format(str(total)))
+            print("Shipping: " + "{:.2f}".format(str(shipping)))
+            print("Total: " + "{:.2f}".format(str(total + shipping)))
+            Messages.pause()
