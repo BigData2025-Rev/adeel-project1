@@ -30,4 +30,4 @@ class AccountService:
         self.db.update_one({"_id": account._id}, {"$push": {"cart": item.to_dict()}})
 
     def get_cart(self, account):
-        return [Item.from_dict(item) for item in self.db.find_one({"_id": account._id})["cart"]]
+        return [Item.from_dict(Item,item) for item in self.db.find_one({"_id": account._id})["cart"]]

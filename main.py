@@ -1,6 +1,11 @@
 from app import Menu
 from utils import Messages
 import sys
+from app import ItemService, AccountService
+from models import Item, Account
+from database import items, accounts
+ItemService = ItemService(items)
+AccountService = AccountService(accounts)
 
 def main():
     
@@ -28,6 +33,19 @@ def main():
         elif account and account.admin == True:
             while True:
                 admin_menu_option = Menu.admin_menu(account)
-            
+
+def test_main():
+    #item = Item("Laptop", 1000, "A laptop", "Laptops", 10, 5)
+    #ItemService.create_item(item)
+    #print(len(ItemService.get_all_items()))
+
+    test_account = AccountService.login("test@testing.com", "password")
+    print(test_account)
+    items = ItemService.get_all_items()
+    #AccountService.add_to_cart(test_account, items[0])
+    print(AccountService.get_cart(test_account))
+    Messages.pause()
+
+
 if __name__ == "__main__":
-    main()
+    test_main()

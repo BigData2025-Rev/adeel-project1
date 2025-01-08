@@ -1,13 +1,15 @@
 from utils import Messages
-from database import accounts, items
+from database import accounts, items, orders
 from app.account_service import AccountService
 from app.item_service import ItemService
+from app.order_service import OrderService
 from models import Account
 import getpass
 import os
 
 ItemService = ItemService(items)
 AccountService = AccountService(accounts)
+OrderService = OrderService(orders)
 
 INVALID_OPTION = "Invalid option! Please try again...\n"
 PASS_DO_NOT_MATCH = "Passwords do not match! Please try again...\n"
@@ -163,7 +165,7 @@ class Menu:
             Messages.menu_option(6, "All Products")
             Messages.menu_option(0, "Return to Menu")
 
-            user_input = int(input("Enter option: "))
+            user_input = int(input("Enter selection: "))
             if user_input not in [1, 2, 3, 4, 5, 6, 0]:
                 clear_console()
                 Messages.error(INVALID_OPTION)
@@ -208,4 +210,51 @@ class Menu:
             print("Sub Total: " + "{:.2f}".format(str(total)))
             print("Shipping: " + "{:.2f}".format(str(shipping)))
             print("Total: " + "{:.2f}".format(str(total + shipping)))
-            Messages.pause()
+            print("\n")
+            Messages.menu_option(1, "Checkout")
+            Messages.menu_option(2, "Remove Item")
+            Messages.menu_option(0, "Return to Store")
+            user_input = int(input("Enter selection: "))
+            if user_input not in [1, 2, 0]:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            return user_input
+        
+    def remove_cart_menu(account):
+        clear_console()
+        while True:
+            Messages.title("EDIT CART")
+            cart = AccountService.get_cart(account)
+            if not cart:
+                Messages.standard("Your cart is empty!")
+                Messages.pause()
+                break
+            for item in cart:
+                Messages.menu_option(cart.index(item) + 1, item.short_str())
+            Messages.menu_option(0, "Return to Cart")
+            user_input = int(input("Enter selection: "))
+            if user_input not in range(len(cart + 1)):
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            return None if user_input == 0 else cart[user_input - 1]
+    
+    def order_history_menu(account):
+        clear_console()
+        while True:
+            Messages.title("ORDER HISTORY")
+            orders = AccountService.get_orders(account)
+            if not orders:
+                Messages.standard("You have no orders!")
+                Messages.pause()
+                break
+            for order in orders:
+                Messages.standard(order)
+            Messages.menu_option(0, "Return to Store")
+            user_input = int(input("Enter selection: "))
+            if user_input != 0:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            return user_input
