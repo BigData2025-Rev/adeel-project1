@@ -5,11 +5,11 @@ class ItemService:
         self.db = db
     
     def create_item(self, item):
-        self.db.items.insert_one(item.to_dict())
+        self.db.insert_one(item.to_dict())
         return item
     
     def get_all_items(self):
-        return [Item.from_dict(item) for item in self.db.items.find()]
+        return [Item.from_dict(item) for item in self.db.find()]
     
     def get_item_by_category(self, category):
-        return [Item.from_dict(item) for item in self.db.items.find({"category": category})]
+        return [Item.from_dict(item) for item in self.db.find({"category": category})]

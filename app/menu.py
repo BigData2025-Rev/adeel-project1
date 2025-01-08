@@ -158,3 +158,11 @@ class Menu:
                 Messages.error(INVALID_OPTION)
                 continue
             return user_input
+    
+    def view_cart_menu(account):
+        clear_console
+        while True:
+            Messages.title("CART")
+            cart = AccountService.get_cart(account)
+            for item in cart:
+                pass

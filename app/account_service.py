@@ -6,11 +6,11 @@ class AccountService:
         self.db = db
 
     def create_account(self, account):
-        self.db.accounts.insert_one(account.to_dict())
+        self.db.insert_one(account.to_dict())
         return account
 
     def validate_email(self, email):
-        if self.db.accounts.find_one({"email": email}):
+        if self.db.find_one({"email": email}):
             return True
         return False
     
@@ -19,7 +19,7 @@ class AccountService:
         return hashed.decode('utf-8')
     
     def login(self, email, password):
-        account = self.db.accounts.find_one({"email": email.lower()})
+        account = self.db.find_one({"email": email.lower()})
         if account:
             hashed_password = account["password"].encode("utf-8")
             if bcrypt.checkpw(password.encode("utf-8"), hashed_password):
@@ -27,7 +27,7 @@ class AccountService:
         return None
     
     def add_to_cart(self, account, item):
-        self.db.accounts.update_one({"_id": account._id}, {"$push": {"cart": item.to_dict()}})
+        self.db.update_one({"_id": account._id}, {"$push": {"cart": item.to_dict()}})
 
     def get_cart(self, account):
-        return [Item.from_dict(item) for item in self.db.accounts.fine_one({"_id": account._id})["cart"]]
+        return [Item.from_dict(item) for item in self.db.fine_one({"_id": account._id})["cart"]]
