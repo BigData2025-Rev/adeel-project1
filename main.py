@@ -1,12 +1,24 @@
-from models import Account
+from app import Menu
+from utils import Messages
+import sys
 
 def main():
-    #(self, first_name, last_name, email, password, address, city, state, zip, points = 100, admin = False, _id = None)
-    newAcc = Account("Test", "Account", "test@test.com", "password", "123 Test St", "Test City", "TX", "12345")
-    print(newAcc)
-    dictAcc = newAcc.to_dict()
-    print(dictAcc)
-    print(Account.from_dict(Account, dictAcc))
+    
+    while True:
+        menu_option = Menu.main_menu()
 
+        if menu_option == 1:
+            account = Menu.login()
+        elif menu_option == 2:
+            account = Menu.register()
+        elif menu_option == 0:
+            Messages.standard("Have a good day!")
+            sys.exit()
+
+        if account is not None:
+            Messages.standard(f"Welcome {account.first_name} {account.last_name}!")
+            while True:
+                menu_option = Menu.main_menu(account)
+            
 if __name__ == "__main__":
     main()
