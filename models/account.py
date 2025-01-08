@@ -1,7 +1,7 @@
 from bson import ObjectId
 
 class Account:
-    def __init__(self, first_name, last_name, email, password, address, city, state, zip, country = "United States", points = 100, admin = False, _id = None, cart = []):
+    def __init__(self, first_name, last_name, email, password, address, city, state, zip, country = "United States", admin = False, _id = None, cart = []):
         self._id = _id or ObjectId()
         self.first_name = first_name
         self.last_name = last_name
@@ -12,7 +12,6 @@ class Account:
         self.state = state
         self.zip = zip
         self.country = country
-        self.points = points
         self.admin = admin
         self.cart = cart
     
@@ -27,12 +26,6 @@ class Account:
     
     def clear_cart(self):
         self.cart = []
-    
-    def add_points(self, points):
-        self.points += points
-    
-    def remove_points(self, points):
-        self.points -= points
     
     def to_dict(self):
         return self.__dict__

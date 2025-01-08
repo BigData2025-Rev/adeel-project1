@@ -1,10 +1,12 @@
 from utils import Messages
-from database import accounts
+from database import accounts, items
 from app.account_service import AccountService
+from app.item_service import ItemService
 from models import Account
 import getpass
 import os
 
+ItemService = ItemService(items)
 AccountService = AccountService(accounts)
 
 INVALID_OPTION = "Invalid option! Please try again...\n"
@@ -13,7 +15,7 @@ PASSWORD_ERROR = "Too many failed attemps, please try again later...\n"
 STATE_ERROR = "Please enter a valid two character state abbreviation\n"
 EMAIL_TAKEN = "Email already in use! Please login instead\n"
 
-catagory = ["Laptops", "Phones", "Watches", "Headphones", "Accessories", "All Products"]
+category = ["Laptops", "Phones", "Watches", "Headphones", "Accessories", "All Products"]
 
 state_abbreviations = [
     "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
@@ -76,7 +78,7 @@ class Menu:
         retry_attemps = 3
         clear_console()
         while retry_attemps > 0:
-            Messages.title("LOG-IN")
+            Messages.title("LOGIN")
             Messages.standard("Please enter your information below")
 
             email = input("Email: ")
@@ -128,7 +130,7 @@ class Menu:
     def store_menu(account) -> int:
         clear_console()
         while True:
-            Messages.title("STORE MENU")
+            Messages.title("STORE")
             Messages.menu_option(1, "Browse Products")
             Messages.menu_option(2, "View Cart")
             Messages.menu_option(3, "Order History")
@@ -142,7 +144,14 @@ class Menu:
                 continue
             return user_input
     
-    def product_catagoery_menu() -> int:
+    def admin_menu(account) -> int:
+        if not account.admin:
+            return None
+        clear_console()
+        Messages.title("ADMIN")
+        Messages.pause()
+
+    def product_category_menu() -> int:
         clear_console()
         while True:
             Messages.title("CATEGORIES")
@@ -161,20 +170,24 @@ class Menu:
                 continue
             return user_input
     
-    def view_product_catagory_menu(catagory_number) -> int:
+    def view_product_category_menu(category_number) -> int:
         clear_console()
         while True:
-            Messages.title(catagory[catagory_number - 1])
-            Messages.menu_option(1, "View Products")
-            Messages.menu_option(2, "Search Products")
-            Messages.menu_option(0, "Return to Menu")
-
-            user_input = int(input("Enter option: "))
-            if user_input not in [1, 2, 0]:
+            Messages.title(category[category_number - 1])
+            items = []
+            if category_number == 6:
+                items = ItemService.get_all_items()
+            else:
+                items = ItemService.get_items_by_catagory(category[category_number - 1])
+            for index, item in enumerate(items):
+                Messages.menu_option(index + 1, item.short_str())
+            Messages.menu_option(0, "Return to Catagories")
+            user_input = int(input("Enter selection: "))
+            if user_input not in range(len(items + 1)):
                 clear_console()
                 Messages.error(INVALID_OPTION)
                 continue
-            return user_input
+            return None if user_input == 0 else items[user_input - 1], category_number
     
     def view_cart_menu(account):
         clear_console

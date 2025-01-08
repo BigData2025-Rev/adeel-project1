@@ -15,16 +15,19 @@ def main():
             Messages.standard("Have a good day!")
             sys.exit()
 
-        if account is not None:
+        if account and account.admin == False:
             Messages.standard(f"Welcome {account.first_name} {account.last_name}!")
             while True:
-                menu_option = Menu.store_menu(account)
+                store_menu_option = Menu.store_menu(account)
                 
-                if (menu_option == 1):
-                    Menu.product_catagoery_menu()
-                elif (menu_option == 2):
+                if (store_menu_option == 1):
+                    category_menu_option = Menu.product_category_menu()
+                    
+                elif (store_menu_option == 2):
                     Menu.view_cart_menu(account)
-                
+        elif account and account.admin == True:
+            while True:
+                admin_menu_option = Menu.admin_menu(account)
             
 if __name__ == "__main__":
     main()
