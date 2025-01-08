@@ -7,7 +7,6 @@ import os
 
 AccountService = AccountService(accounts)
 
-
 INVALID_OPTION = "Invalid option! Please try again...\n\n"
 PASS_DO_NOT_MATCH = "Passwords do not match! Please try again...\n\n"
 PASSWORD_ERROR = "Too many failed attemps, please try again later...\n\n"
@@ -124,7 +123,38 @@ class Menu:
             return newAccount
         return None
     
-    def store_menu() -> int:
+    def store_menu(account) -> int:
         clear_console()
-        Messages.title("LOG-IN")
+        while True:
+            Messages.title("STORE MENU")
+            Messages.menu_option(1, "Browse Products")
+            Messages.menu_option(2, "View Cart")
+            Messages.menu_option(3, "Order History")
+            Messages.menu_option(4, "Account")
+            Messages.menu_option(0, "Exit")
+
+            user_input = int(input("Enter option: "))
+            if user_input not in [1, 2, 3, 4, 0]:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            return user_input
     
+    def product_catagoery_menu() -> int:
+        clear_console()
+        while True:
+            Messages.title("CATEGORIES")
+            Messages.menu_option(1, "Laptops")
+            Messages.menu_option(2, "Phones")
+            Messages.menu_option(3, "Watches")
+            Messages.menu_option(4, "Headphones")
+            Messages.menu_option(5, "Accessories")
+            Messages.menu_option(6, "All Products")
+            Messages.menu_option(0, "Return to Menu")
+
+            user_input = int(input("Enter option: "))
+            if user_input not in [1, 2, 3, 4, 5, 6, 0]:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            return user_input

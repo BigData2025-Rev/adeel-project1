@@ -1,5 +1,5 @@
 import bcrypt
-from models import Account
+from models import Account, Item
 
 class AccountService:
     def __init__(self, db):
@@ -25,3 +25,9 @@ class AccountService:
             if bcrypt.checkpw(password.encode("utf-8"), hashed_password):
                 return Account.from_dict(account)
         return None
+    
+    def add_to_cart(self, account, item):
+        self.db.accounts.update_one({"_id": account._id}, {"$push": {"cart": item.to_dict()}})
+
+    def get_cart(self, account):
+        return [Item.from_dict(item) for item in self.db.accounts.fine_one({"_id": account._id})["cart"]]
