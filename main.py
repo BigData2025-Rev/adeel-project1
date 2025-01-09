@@ -36,10 +36,10 @@ def main():
                 if (store_menu_option == 1):
                     while True:
                         category_selected = Menu.product_category_menu()
-                        while True:
-                            if category_selected == 0:
-                                break
-                            elif category_selected in [1, 2, 3, 4, 5, 6]:
+                        if category_selected == 0:
+                            break
+                        if category_selected in [1, 2, 3, 4, 5, 6]:
+                            while True:
                                 item_selected = Menu.view_product_category_menu(category_selected)
                                 carted = Menu.view_item(item_selected, account)
                                 if carted:
@@ -47,11 +47,27 @@ def main():
                                     Messages.pause()
                                 else:
                                     break
-                            else:
-                                Messages.error("Unknown Error. Please try again.")
-                                break
                 elif (store_menu_option == 2):
-                    Menu.view_cart_menu(account)
+                    while True:
+                        user_checkout_option = Menu.view_cart_menu(account)
+                        if user_checkout_option == 0:
+                            break
+                        elif user_checkout_option == 1:
+                            success = Menu.checkout(account)
+                            if success:
+                                Messages.success("Checkout successful!")
+                                Messages.pause()
+                            break
+                        elif user_checkout_option == 2:
+                            while True:
+                                success = Menu.remove_cart_menu(account)
+                                if success:
+                                    Messages.success("Item removed from cart!")
+                                    Messages.pause()
+                                    continue
+                                else:
+                                    break
+
         elif account and admin_select_option == 1:
             while True:
                 admin_menu_option = Menu.admin_menu(account)
@@ -71,4 +87,4 @@ def test_main():
 
 
 if __name__ == "__main__":
-    test_main()
+    main()

@@ -10,7 +10,7 @@ class Color:
 
 class Messages:
     def menu_option(option, message: str):
-        if option == 0 or "X":
+        if option == 0 or option == "X":
             print(Color.RED + "[" + str(option) + "] " + Color.END, end="")
         else:
             print(Color.MAGENTA + "[" + str(option) + "] " + Color.END, end="")
