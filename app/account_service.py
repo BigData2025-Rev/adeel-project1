@@ -9,6 +9,9 @@ class AccountService:
         self.db.insert_one(account.to_dict())
         return account
 
+    def get_all_accounts(self):
+        return [Account.from_dict(Account, account) for account in self.db.find()]
+
     def validate_email(self, email):
         if self.db.find_one({"email": email}):
             return True
@@ -25,6 +28,9 @@ class AccountService:
             if bcrypt.checkpw(password.encode("utf-8"), hashed_password):
                 return Account.from_dict(Account, account)
         return None
+
+    def view_all_accounts(self):
+        return [Account.from_dict(Account, account) for account in self.db.find()]
     
     def add_to_cart(self, account, item):
         self.db.update_one({"_id": account._id}, {"$push": {"cart": item.to_dict()}})
@@ -52,3 +58,9 @@ class AccountService:
     
     def update_email(self, account, email):
         self.db.update_one({"_id": account._id}, {"$set": {"email": email}})
+    
+    def delete_account(self, account):
+        self.db.delete_one({"_id": account._id})
+
+    def make_admin(self, account):
+        self.db.update_one({"_id": account._id}, {"$set": {"admin": True}})

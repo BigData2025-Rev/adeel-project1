@@ -18,6 +18,9 @@ class Account:
     def __str__(self):
         return f"{self.first_name} {self.last_name} - {self.email}\n{self.address}\n{self.city}, {self.state} {self.zip}\nADMIN ACCOUNT" if self.admin else f"{self.first_name} {self.last_name} - {self.email}\n{self.address}\n{self.city}, {self.state} {self.zip}"
     
+    def short_str(self):
+        return f"{self.email} - {self.first_name}"
+
     def add_to_cart(self, item):
         self.cart.append(item)
     

@@ -17,7 +17,9 @@ class Order:
     def items_str(self):
         return "\n".join([item.short_str() for item in self.items])
 
-
+    def short_str(self):
+        return f"{self._id} - {self.total}"
+    
     def to_dict(self):
         return self.__dict__
     

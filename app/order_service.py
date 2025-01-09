@@ -16,3 +16,6 @@ class OrderService:
 
     def get_all_orders(self):
         return [Order.from_dict(Order, order) for order in self.db.find()]
+    
+    def delete_order(self, order):
+        self.db.delete_one({"_id": order._id})

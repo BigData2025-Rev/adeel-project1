@@ -412,10 +412,59 @@ class Menu:
                 continue
             return None if user_input == 0 else orders[user_input - 1]
     
+    def update_account_menu(account):
+        clear_console()
+        while True:
+            Messages.title("UPDATE ACCOUNT")
+            Messages.menu_option(1, "Update Email")
+            Messages.menu_option(2, "Update Street Address")
+            Messages.menu_option(3, "Update City")
+            Messages.menu_option(4, "Update State")
+            Messages.menu_option(5, "Update Zip")
+            Messages.menu_option(0, "Return to Menu")
+            try:
+                user_input = int(input("Enter selection: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            if user_input not in [1, 2, 3, 4, 5, 0]:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            return user_input
+    
+    def update_address(account):
+        address = input("Street Address: ")
+        AccountService.update_address(account, address)
+
+    def update_email(account):
+        email = input("Email: ")
+        if AccountService.validate_email(email):
+            Messages.error(EMAIL_TAKEN)
+            Messages.pause()
+            return None
+        AccountService.update_email(account, email)
+    
+    def update_city(account):
+        city = input("City: ")
+        AccountService.update_city(account, city)
+    
+    def update_state(account):
+        state = get_valid_state()
+        if state:
+            AccountService.update_state(account, state)
+        else:
+            Messages.pause()
+    
+    def update_zip(account):
+        zip = input("Zip: ")
+        AccountService.update_zip(account, zip)
+
     def view_order(order, account):
         clear_console()
         while True:
-            Messages.title(order._id)
+            Messages.title("ORDER")
             print(order)
             Messages.menu_option(0, "Return to Order History")
             try:
@@ -429,3 +478,195 @@ class Menu:
                 Messages.error(INVALID_OPTION)
                 continue
             return None
+    
+    def admin_menu():
+        clear_console()
+        while True:
+            Messages.title("ADMIN")
+            Messages.menu_option(1, "Accounts")
+            Messages.menu_option(2, "Orders")
+            Messages.menu_option(3, "Items")
+            Messages.menu_option(0, "Return to Main Menu")
+            try:
+                user_input = int(input("Enter selection: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            if user_input not in [1, 2, 3, 0]:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            return user_input
+
+    def admin_users_menu():
+        clear_console()
+        while True:
+            Messages.title("ACCOUNTS")
+            accounts = AccountService.get_all_accounts()
+            if not accounts:
+                Messages.standard("No accounts found")
+                Messages.pause()
+                break
+            for index, account in enumerate(accounts):
+                Messages.option(index + 1, account.short_str())
+            Messages.menu_option(0, "Return to Menu")
+            try:
+                user_input = int(input("Enter selection: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            if user_input not in range(len(accounts) + 1):
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            return None if user_input == 0 else accounts[user_input - 1]
+
+    def admin_view_account(account):
+        clear_console()
+        Messages.title(account.email)
+        print(account)
+        Messages.menu_option(1, "Delete Account")
+        if not account.admin:
+            Messages.menu_option(2, "Make Admin")
+        Messages.menu_option(0, "Return to Accounts")
+        try:
+            user_input = int(input("Enter selection: "))
+        except ValueError:
+            clear_console()
+            Messages.error(INVALID_OPTION)
+            return
+        if user_input not in [0, 1, 2]:
+            clear_console()
+            Messages.error(INVALID_OPTION)
+        if user_input == 1:
+            confirm = input("Are you sure you want to delete this account? (Y/N): ")
+            if confirm.lower() in ["ye", "y", "yes"]:
+                if account.admin == True:
+                    Messages.error("Cannot delete admin account!")
+                    Messages.pause()
+                    return
+                else:
+                    AccountService.delete_account(account)
+                    Messages.success("Successfully deleted account")
+                    Messages.pause()
+        if user_input == 2:
+            if account.admin == True:
+                return
+            else:
+                confirm = input("Are you sure you want to make this user an admin? (Y/N): ")
+                if confirm.lower() in ["ye", "y", "yes"]:
+                    AccountService.make_admin(account)
+                    Messages.success("Made user admin!")
+        return
+
+    def admin_items_menu():
+        clear_console()
+        while True:
+            Messages.title("ITEMS")
+            items = ItemService.get_all_items()
+            if not items:
+                Messages.standard("No items found")
+                Messages.pause()
+                break
+            for index, item in enumerate(items):
+                Messages.option(index + 1, item.short_str())
+            Messages.menu_option(0, "Return to Menu")
+            try:
+                user_input = int(input("Enter selection: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            if user_input not in range(len(items) + 1):
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            return None if user_input == 0 else items[user_input - 1]
+
+    def admin_view_item(item):
+        clear_console()
+        Messages.title(item.name)
+        print(item)
+        Messages.menu_option(1, "Delete Item")
+        Messages.menu_option(2, "Add Stock")
+        Messages.menu_option(3, "Remove Stock")
+        Messages.menu_option(0, "Return to Items")
+        try:
+            user_input = int(input("Enter selection: "))
+        except ValueError:
+            clear_console()
+            Messages.error(INVALID_OPTION)
+            return
+        if user_input not in [0, 1, 2, 3]:
+            clear_console()
+            Messages.error(INVALID_OPTION)
+        if user_input == 1:
+            confirm = input("Are you sure you want to delete this item? (Y/N): ")
+            if confirm.lower() in ["ye", "y", "yes"]:
+                ItemService.delete_item(item)
+                Messages.success("Successfully deleted item")
+                Messages.pause()
+        elif user_input == 2:
+            amount = input("How much stock would you like to add? ")
+            if amount <= 0:
+                Messages.error("Cannot add less than 1")
+                Messages.pause()
+                return
+            ItemService.add_stock(item, amount)
+        elif user_input == 3:
+            amount = input("How much stock would you like to add? ")
+            if amount > item.stock:
+                Messages.error("Cannot remove more than stock")
+                Messages.pause()
+                return
+            ItemService.remove_stock(item, amount)
+        return
+
+    def admin_orders_menu():
+        clear_console()
+        while True:
+            Messages.title("ORDERS")
+            orders = OrderService.get_all_orders()
+            if not orders:
+                Messages.standard("No orders found")
+                Messages.pause()
+                break
+            for index, order in enumerate(orders):
+                Messages.option(index + 1, order.short_str())
+            Messages.menu_option(0, "Return to Menu")
+            try:
+                user_input = int(input("Enter selection: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            if user_input not in range(len(accounts) + 1):
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            return None if user_input == 0 else accounts[user_input - 1]
+
+    def admin_view_order(order):
+        clear_console()
+        Messages.title(order._id)
+        print(order)
+        Messages.menu_option(1, "Delete Order")
+        Messages.menu_option(0, "Return to Orders")
+        try:
+            user_input = int(input("Enter selection: "))
+        except ValueError:
+            clear_console()
+            Messages.error(INVALID_OPTION)
+            return
+        if user_input not in [0, 1]:
+            clear_console()
+            Messages.error(INVALID_OPTION)
+        if user_input == 1:
+            confirm = input("Are you sure you want to delete this order? (Y/N): ")
+            if confirm.lower() in ["ye", "y", "yes"]:
+                OrderService.delete_order(order)
+                Messages.success("Successfully deleted order")
+                Messages.pause()
+        return
