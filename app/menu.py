@@ -222,8 +222,12 @@ class Menu:
         while True:
             Messages.title("CART")
             cart = AccountService.get_cart(account)
+            user_choices = []
             if not cart:
                 Messages.standard("Your cart is empty!")
+                user_choices = [0]
+            else:
+                user_choices = [0, 1, 2]
             for item in cart:
                 print(item.short_str())
             print("\n")
@@ -235,8 +239,9 @@ class Menu:
             print("Shipping: " + "{:.2f}".format(shipping))
             print("Total: " + "{:.2f}".format(total + shipping))
             print("\n")
-            Messages.menu_option(1, "Checkout")
-            Messages.menu_option(2, "Remove Item")
+            if cart:
+                Messages.menu_option(1, "Checkout")
+                Messages.menu_option(2, "Remove Item")
             Messages.menu_option(0, "Return to Store")
             try:
                 user_input = int(input("Enter selection: "))
@@ -244,7 +249,7 @@ class Menu:
                 clear_console()
                 Messages.error(INVALID_OPTION)
                 continue
-            if user_input not in [1, 2, 0]:
+            if user_input not in user_choices:
                 clear_console()
                 Messages.error(INVALID_OPTION)
                 continue
