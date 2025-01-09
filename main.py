@@ -1,10 +1,10 @@
 from app import Menu
-from utils import Messages
 import sys
 from app import ItemService, AccountService
 from models import Item, Account
 from database import items, accounts
 ItemService = ItemService(items)
+from utils import Messages
 AccountService = AccountService(accounts)
 
 def main():
@@ -41,6 +41,8 @@ def main():
                         if category_selected in [1, 2, 3, 4, 5, 6]:
                             while True:
                                 item_selected = Menu.view_product_category_menu(category_selected)
+                                if item_selected == None:
+                                    break
                                 carted = Menu.view_item(item_selected, account)
                                 if carted:
                                     Messages.success("Item added to cart!")
@@ -74,16 +76,16 @@ def main():
 
 
 def test_main():
-    #item = Item("Laptop", 1000, "A laptop", "Laptops", 10, 5)
-    #ItemService.create_item(item)
+    item = Item("Laptop", 1000, "A laptop", "Laptops", 10, 5)
+    ItemService.create_item(item)
     #print(len(ItemService.get_all_items()))
 
-    test_account = AccountService.login("test@testing.com", "password")
-    print(test_account)
+    #test_account = AccountService.login("test@testing.com", "password")
+    #print(test_account)
     items = ItemService.get_all_items()
     #AccountService.add_to_cart(test_account, items[0])
-    print(AccountService.get_cart(test_account))
-    Messages.pause()
+    #print(AccountService.get_cart(test_account))
+    #Messages.pause()
 
 
 if __name__ == "__main__":

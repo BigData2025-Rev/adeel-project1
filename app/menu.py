@@ -186,12 +186,12 @@ class Menu:
             if category_number == 6:
                 items = ItemService.get_all_items()
             else:
-                items = ItemService.get_items_by_catagory(category[category_number - 1])
+                items = ItemService.get_items_by_category(category[category_number - 1])
             for index, item in enumerate(items):
                 Messages.menu_option(index + 1, item.short_str())
             Messages.menu_option(0, "Return to Catagories")
             user_input = int(input("Enter selection: "))
-            if user_input not in range(len(items + 1)):
+            if user_input not in range(len(items) + 1):
                 clear_console()
                 Messages.error(INVALID_OPTION)
                 continue
@@ -204,18 +204,16 @@ class Menu:
             cart = AccountService.get_cart(account)
             if not cart:
                 Messages.standard("Your cart is empty!")
-                Messages.pause()
-                break
             for item in cart:
-                print(item)
+                print(item.short_str())
             print("\n")
             total = sum(item.price for item in cart)
             shipping = sum(item.weight_to_shipprice() for item in cart) 
             if shipping > 20:
                 shipping = 20
-            print("Sub Total: " + "{:.2f}".format(str(total)))
-            print("Shipping: " + "{:.2f}".format(str(shipping)))
-            print("Total: " + "{:.2f}".format(str(total + shipping)))
+            print("Sub Total: " + "{:.2f}".format(total))
+            print("Shipping: " + "{:.2f}".format(shipping))
+            print("Total: " + "{:.2f}".format(total + shipping))
             print("\n")
             Messages.menu_option(1, "Checkout")
             Messages.menu_option(2, "Remove Item")
@@ -230,7 +228,7 @@ class Menu:
     def remove_cart_menu(account):
         clear_console()
         while True:
-            Messages.title("EDIT CART")
+            Messages.title("REMOVE ITEM")
             cart = AccountService.get_cart(account)
             if not cart:
                 Messages.standard("Your cart is empty!")
@@ -240,7 +238,7 @@ class Menu:
                 Messages.menu_option(index+1, item.short_str())
             Messages.menu_option(0, "Return to Cart")
             user_input = int(input("Enter selection: "))
-            if user_input not in range(len(cart + 1)):
+            if user_input not in range(len(cart) + 1):
                 clear_console()
                 Messages.error(INVALID_OPTION)
                 continue
