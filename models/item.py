@@ -1,17 +1,17 @@
 from bson import ObjectId
 
 class Item:
-    def __init__(self, name, price, description, catagory, stock, weight, _id = None):
+    def __init__(self, name, price, description, category, stock, weight, _id = None):
         self._id = _id or ObjectId()
         self.name = name
         self.price = price
         self.description = description
-        self.catagory = catagory
+        self.category = category
         self.stock = stock
         self.weight = weight
     
     def __str__(self):
-        return f"{self.name} - ${self.price}\n{self.catagory}\n{self.description}\n{self.stock} left" if self.stock > 0 else f"{self.name} - ${self.price}\n{self.description}\nOut of Stock"
+        return f"{self.name} - ${self.price}\n{self.category}\n{self.description}\n{self.stock} left" if self.stock > 0 else f"{self.name} - ${self.price}\n{self.description}\nOut of Stock"
 
     def short_str(self):
         return f"{self.name} - ${self.price}"

@@ -69,6 +69,12 @@ def main():
                                     continue
                                 else:
                                     break
+                elif (store_menu_option == 3):
+                    Menu.view_order_history(account)
+                elif (store_menu_option == 4):
+                    Menu.account_menu(account)
+                elif (store_menu_option == 0):
+                    break
 
         elif account and admin_select_option == 1:
             while True:

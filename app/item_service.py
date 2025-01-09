@@ -12,4 +12,5 @@ class ItemService:
         return [Item.from_dict(Item, item) for item in self.db.find()]
     
     def get_items_by_category(self, category):
+        print(category)
         return [Item.from_dict(Item, item) for item in self.db.find({"category": category})]

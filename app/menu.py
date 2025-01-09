@@ -381,3 +381,27 @@ class Menu:
                 AccountService.add_to_cart(account, item)
                 return True
             return False
+    
+    def view_order_history(account):
+        clear_console()
+        while True:
+            Messages.title("ORDER HISTORY")
+            orders = OrderService.get_orders_by_account(account)
+            if not orders:
+                Messages.standard("You have no orders!")
+                Messages.pause()
+                break
+            for index, order in enumerate(orders):
+                Messages.option(index + 1, order.short_str())
+            Messages.menu_option(0, "Return to Menu")
+            try:
+                user_input = int(input("Enter selection: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            if user_input not in range(len(orders) + 1):
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            return None if user_input == 0 else orders[user_input - 1]
