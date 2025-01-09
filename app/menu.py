@@ -30,6 +30,7 @@ state_abbreviations = [
 
 def get_valid_password() -> str:
     retry_attemps = 3
+
     while retry_attemps > 0:
         password = getpass.getpass("Password: ")
         confirm_password = getpass.getpass("Confirm Password: ")
@@ -38,14 +39,16 @@ def get_valid_password() -> str:
             Messages.error("You have " + str(retry_attemps) + " attempts left")
             continue
         break
+
     if retry_attemps == 0:
         Messages.error(PASSWORD_ERROR)
         return None
+    
     return password
 
 def get_valid_state() -> str:
     retry_attemps = 3
-
+    
     while retry_attemps > 0:
         state = input("State: ")
         if state not in state_abbreviations:
@@ -53,9 +56,11 @@ def get_valid_state() -> str:
             Messages.error("You have " + str(retry_attemps) + " attempts left")
             continue
         break
+    
     if retry_attemps == 0:
         Messages.error(PASSWORD_ERROR)
         return None
+    
     return state
 
 def clear_console():
@@ -190,7 +195,7 @@ class Menu:
                 clear_console()
                 Messages.error(INVALID_OPTION)
                 continue
-            return None if user_input == 0 else items[user_input - 1], category_number
+            return None if user_input == 0 else items[user_input - 1]
     
     def view_cart_menu(account):
         clear_console
@@ -287,3 +292,41 @@ class Menu:
             AccountService.update_password(account, password)
             Messages.success("Password updated successfully!")
             break
+
+    def admin_select_option():
+        clear_console()
+        while True:
+            Messages.title("ADMIN SELECT")
+            Messages.standard("Would you like to view the admin or user menu?")
+            Messages.menu_option(1, "Admin")
+            Messages.menu_option(2, "User")
+            Messages.menu_option(0, "Exit")
+            user_input = int(input("Enter selection: "))
+            if user_input not in [1, 2, 0]:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            return user_input
+    
+    def view_item(item, account):
+        clear_console()
+        while True:
+            Messages.title(item.name)
+            print(item)
+            user_choices = []
+            if item.stock > 0:
+                Messages.menu_option(1, "Add to Cart")
+                user_choices = [0, 1]
+            else:
+                Messages.menu_option("X", "Add to Cart")
+                user_choices = [0]
+            Messages.menu_option(0, "Return to Category")
+            user_input = int(input("Enter selection: "))
+            if user_input not in user_choices:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            if user_input == 1:
+                AccountService.add_to_cart(account, item)
+                return True
+            return False

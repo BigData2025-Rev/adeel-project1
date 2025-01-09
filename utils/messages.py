@@ -9,8 +9,8 @@ class Color:
     MAGENTA = '\033[35m'
 
 class Messages:
-    def menu_option(option: int, message: str):
-        if option == 0:
+    def menu_option(option, message: str):
+        if option == 0 or "X":
             print(Color.RED + "[" + str(option) + "] " + Color.END, end="")
         else:
             print(Color.MAGENTA + "[" + str(option) + "] " + Color.END, end="")
