@@ -28,6 +28,9 @@ class AccountService:
     
     def add_to_cart(self, account, item):
         self.db.update_one({"_id": account._id}, {"$push": {"cart": item.to_dict()}})
+    
+    def remove_from_cart(self, account, item):
+        self.db.update_one({"_id": account._id}, {"$pull": {"cart": item.to_dict()}})
 
     def get_cart(self, account):
         return [Item.from_dict(Item,item) for item in self.db.find_one({"_id": account._id})["cart"]]

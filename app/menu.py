@@ -75,7 +75,12 @@ class Menu:
             Messages.menu_option(2, "Register")
             Messages.menu_option(0, "Exit")
 
-            user_input = int(input("Enter option: "))
+            try:
+                user_input = int(input("Enter selection: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
             if user_input not in [1, 2, 0]:
                 clear_console()
                 Messages.error(INVALID_OPTION)
@@ -145,7 +150,12 @@ class Menu:
             Messages.menu_option(4, "Account")
             Messages.menu_option(0, "Exit")
 
-            user_input = int(input("Enter option: "))
+            try:
+                user_input = int(input("Enter selection: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
             if user_input not in [1, 2, 3, 4, 0]:
                 clear_console()
                 Messages.error(INVALID_OPTION)
@@ -171,7 +181,12 @@ class Menu:
             Messages.menu_option(6, "All Products")
             Messages.menu_option(0, "Return to Menu")
 
-            user_input = int(input("Enter selection: "))
+            try:
+                user_input = int(input("Enter selection: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
             if user_input not in [1, 2, 3, 4, 5, 6, 0]:
                 clear_console()
                 Messages.error(INVALID_OPTION)
@@ -190,7 +205,12 @@ class Menu:
             for index, item in enumerate(items):
                 Messages.menu_option(index + 1, item.short_str())
             Messages.menu_option(0, "Return to Catagories")
-            user_input = int(input("Enter selection: "))
+            try:
+                user_input = int(input("Enter selection: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
             if user_input not in range(len(items) + 1):
                 clear_console()
                 Messages.error(INVALID_OPTION)
@@ -198,7 +218,7 @@ class Menu:
             return None if user_input == 0 else items[user_input - 1]
     
     def view_cart_menu(account):
-        clear_console
+        clear_console()
         while True:
             Messages.title("CART")
             cart = AccountService.get_cart(account)
@@ -218,7 +238,12 @@ class Menu:
             Messages.menu_option(1, "Checkout")
             Messages.menu_option(2, "Remove Item")
             Messages.menu_option(0, "Return to Store")
-            user_input = int(input("Enter selection: "))
+            try:
+                user_input = int(input("Enter selection: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
             if user_input not in [1, 2, 0]:
                 clear_console()
                 Messages.error(INVALID_OPTION)
@@ -237,12 +262,20 @@ class Menu:
             for index, item in enumerate(cart):
                 Messages.menu_option(index+1, item.short_str())
             Messages.menu_option(0, "Return to Cart")
-            user_input = int(input("Enter selection: "))
+            try:
+                user_input = int(input("Enter selection: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
             if user_input not in range(len(cart) + 1):
                 clear_console()
                 Messages.error(INVALID_OPTION)
                 continue
-            return None if user_input == 0 else cart[user_input - 1]
+            if user_input == 0:
+                return False
+            AccountService.remove_from_cart(account, cart[user_input - 1])
+            return True
     
     def order_history_menu(account):
         clear_console()
@@ -256,7 +289,12 @@ class Menu:
             for index, order in enumerate(orders):
                 Messages.option(index + 1, order.short_str())
             Messages.menu_option(0, "Return to Store")
-            user_input = int(input("Enter selection: "))
+            try:
+                user_input = int(input("Enter selection: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
             if user_input not in range(len(order + 1)):
                 clear_console()
                 Messages.error(INVALID_OPTION)
@@ -271,7 +309,12 @@ class Menu:
             Messages.menu_option(1, "Edit Information")
             Messages.menu_option(2, "Change Password")
             Messages.menu_option(0, "Return to Store")
-            user_input = int(input("Enter selection: "))
+            try:
+                user_input = int(input("Enter selection: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
             if user_input not in [1, 2, 0]:
                 clear_console()
                 Messages.error(INVALID_OPTION)
@@ -299,7 +342,12 @@ class Menu:
             Messages.menu_option(1, "Admin")
             Messages.menu_option(2, "User")
             Messages.menu_option(0, "Exit")
-            user_input = int(input("Enter selection: "))
+            try:
+                user_input = int(input("Enter selection: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
             if user_input not in [1, 2, 0]:
                 clear_console()
                 Messages.error(INVALID_OPTION)
@@ -319,7 +367,12 @@ class Menu:
                 Messages.menu_option("X", "Add to Cart")
                 user_choices = [0]
             Messages.menu_option(0, "Return to Category")
-            user_input = int(input("Enter selection: "))
+            try:
+                user_input = int(input("Enter selection: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
             if user_input not in user_choices:
                 clear_console()
                 Messages.error(INVALID_OPTION)
