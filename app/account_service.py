@@ -31,3 +31,6 @@ class AccountService:
 
     def get_cart(self, account):
         return [Item.from_dict(Item,item) for item in self.db.find_one({"_id": account._id})["cart"]]
+    
+    def change_password(self, account, password):
+        self.db.update_one({"_id": account._id}, {"$set": {"password": self.hash_password(password)}})

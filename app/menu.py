@@ -14,6 +14,7 @@ OrderService = OrderService(orders)
 INVALID_OPTION = "Invalid option! Please try again...\n"
 PASS_DO_NOT_MATCH = "Passwords do not match! Please try again...\n"
 PASSWORD_ERROR = "Too many failed attemps, please try again later...\n"
+PASSWORD_CHANGE_ERROR = "Password change failed! Please try again...\n"
 STATE_ERROR = "Please enter a valid two character state abbreviation\n"
 EMAIL_TAKEN = "Email already in use! Please login instead\n"
 
@@ -230,8 +231,8 @@ class Menu:
                 Messages.standard("Your cart is empty!")
                 Messages.pause()
                 break
-            for item in cart:
-                Messages.menu_option(cart.index(item) + 1, item.short_str())
+            for index, item in enumerate(cart):
+                Messages.menu_option(index+1, item.short_str())
             Messages.menu_option(0, "Return to Cart")
             user_input = int(input("Enter selection: "))
             if user_input not in range(len(cart + 1)):
@@ -249,12 +250,40 @@ class Menu:
                 Messages.standard("You have no orders!")
                 Messages.pause()
                 break
-            for order in orders:
-                Messages.standard(order)
+            for index, order in enumerate(orders):
+                Messages.option(index + 1, order.short_str())
             Messages.menu_option(0, "Return to Store")
             user_input = int(input("Enter selection: "))
-            if user_input != 0:
+            if user_input not in range(len(order + 1)):
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            return None if user_input == 0 else orders[user_input - 1]
+    
+    def account_menu(account):
+        clear_console()
+        while True:
+            Messages.title("ACCOUNT")
+            print(account)
+            Messages.menu_option(1, "Edit Information")
+            Messages.menu_option(2, "Change Password")
+            Messages.menu_option(0, "Return to Store")
+            user_input = int(input("Enter selection: "))
+            if user_input not in [1, 2, 0]:
                 clear_console()
                 Messages.error(INVALID_OPTION)
                 continue
             return user_input
+    
+    def change_password(account):
+        clear_console()
+        while True:
+            Messages.title("CHANGE PASSWORD")
+            password = get_valid_password()
+            if password is None:
+                print(PASSWORD_CHANGE_ERROR)
+                return None
+            password = AccountService.hash_password(password)
+            AccountService.update_password(account, password)
+            Messages.success("Password updated successfully!")
+            break
