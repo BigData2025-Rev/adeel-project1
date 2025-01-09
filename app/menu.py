@@ -332,6 +332,7 @@ class Menu:
             password = AccountService.hash_password(password)
             AccountService.update_password(account, password)
             Messages.success("Password updated successfully!")
+            Messages.pause()
             break
 
     def admin_select_option():
@@ -405,3 +406,21 @@ class Menu:
                 Messages.error(INVALID_OPTION)
                 continue
             return None if user_input == 0 else orders[user_input - 1]
+    
+    def view_order(order, account):
+        clear_console()
+        while True:
+            Messages.title(order._id)
+            print(order)
+            Messages.menu_option(0, "Return to Order History")
+            try:
+                user_input = int(input("Enter selection: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            if user_input not in [0]:
+                clear_console()
+                Messages.error(INVALID_OPTION)
+                continue
+            return None

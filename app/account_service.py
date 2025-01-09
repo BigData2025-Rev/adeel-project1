@@ -37,3 +37,18 @@ class AccountService:
     
     def change_password(self, account, password):
         self.db.update_one({"_id": account._id}, {"$set": {"password": self.hash_password(password)}})
+
+    def update_address(self, account, address):
+        self.db.update_one({"_id": account._id}, {"$set": {"address": address}})
+    
+    def update_city(self, account, city):
+        self.db.update_one({"_id": account._id}, {"$set": {"city": city}})
+
+    def update_state(self, account, state):
+        self.db.update_one({"_id": account._id}, {"$set": {"state": state}})
+
+    def update_zip(self, account, zip):
+        self.db.update_one({"_id": account._id}, {"$set": {"zip": zip}})
+    
+    def update_email(self, account, email):
+        self.db.update_one({"_id": account._id}, {"$set": {"email": email}})
