@@ -79,6 +79,29 @@ def main():
         elif account and admin_select_option == 1:
             while True:
                 admin_menu_option = Menu.admin_menu(account)
+                if admin_menu_option == 0:
+                    break
+                elif admin_menu_option == 1:
+                    while True:
+                        account = Menu.admin_accounts_menu()
+                        if account:
+                            Menu.admin_view_account(account)
+                            continue
+                        break
+                elif admin_menu_option == 2:
+                    while True:
+                            order = Menu.admin_orders_menu()
+                            if account:
+                                Menu.admin_view_order(order)
+                                continue
+                            break
+                elif admin_menu_option == 3:
+                    while True:
+                            item = Menu.admin_items_menu()
+                            if account:
+                                Menu.admin_view_item(item)
+                                continue
+                            break
 
 
 def test_main():

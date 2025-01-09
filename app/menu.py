@@ -499,7 +499,7 @@ class Menu:
                 continue
             return user_input
 
-    def admin_users_menu():
+    def admin_account_menu():
         clear_console()
         while True:
             Messages.title("ACCOUNTS")
