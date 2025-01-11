@@ -392,7 +392,7 @@ class Menu:
         clear_console()
         while True:
             Messages.title("ORDER HISTORY")
-            orders = OrderService.get_orders_by_account(account)
+            orders = OrderService.get_orders_by_account(account.email)
             if not orders:
                 Messages.standard("You have no orders!")
                 Messages.pause()
@@ -461,7 +461,7 @@ class Menu:
         zip = input("Zip: ")
         AccountService.update_zip(account, zip)
 
-    def view_order(order, account):
+    def view_order(order):
         clear_console()
         while True:
             Messages.title("ORDER")

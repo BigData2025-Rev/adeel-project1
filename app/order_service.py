@@ -1,4 +1,4 @@
-from models import Order
+from models import Order, Account
 
 class OrderService:
     def __init__(self, db):
@@ -19,3 +19,6 @@ class OrderService:
     
     def delete_order(self, order):
         self.db.delete_one({"_id": order._id})
+    
+    def get_orders_by_account(self, account_email):
+        return [Order.from_dict(Order, order) for order in self.db.find({"account.email": account_email})]
