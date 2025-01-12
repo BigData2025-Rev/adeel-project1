@@ -1,4 +1,4 @@
-from utils import Messages, Errors
+from utils import Messages, logger
 from database import accounts, items, orders
 from app.account_service import AccountService
 from app.item_service import ItemService
@@ -116,8 +116,13 @@ class Menu:
                 retry_attemps -= 1
                 continue
             Messages.success("Logged in successfully!")
+            logger.info(f"Logged in [{account.email}]")
             Messages.pause()
             return account
+        if retry_attemps == 0:
+            Messages.error("Unable to login, please try again later")
+            logger.info("Failed log-in attempt")
+            Messages.pause()
 
 
     def register() -> str:
@@ -185,6 +190,7 @@ class Menu:
             newAccount = Account(first_name.title(), last_name.title(), email, password, address, city.title(), state, zip)
             if AccountService.create_account(newAccount):
                 Messages.success("Account created successfully!")
+                logger.info(f"New user [{newAccount.email}]")
                 Messages.pause()
                 return newAccount
             return None
@@ -591,6 +597,9 @@ class Menu:
                 Messages.error(INVALID_OPTION)
                 continue
             return None if user_input == 0 else orders[user_input - 1]
+
+    def checkout():
+        clear_console()
 
     def remove_cart_menu(account):
         clear_console()
