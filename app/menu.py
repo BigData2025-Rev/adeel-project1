@@ -282,30 +282,6 @@ class Menu:
             AccountService.remove_from_cart(account, cart[user_input - 1])
             return True
     
-    def order_history_menu(account):
-        clear_console()
-        while True:
-            Messages.title("ORDER HISTORY")
-            orders = AccountService.get_orders(account)
-            if not orders:
-                Messages.standard("You have no orders!")
-                Messages.pause()
-                break
-            for index, order in enumerate(orders):
-                Messages.option(index + 1, order.short_str())
-            Messages.menu_option(0, "Return to Store")
-            try:
-                user_input = int(input("Enter selection: "))
-            except ValueError:
-                clear_console()
-                Messages.error(INVALID_OPTION)
-                continue
-            if user_input not in range(len(order + 1)):
-                clear_console()
-                Messages.error(INVALID_OPTION)
-                continue
-            return None if user_input == 0 else orders[user_input - 1]
-    
     def account_menu(account):
         clear_console()
         while True:

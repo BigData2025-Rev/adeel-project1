@@ -70,9 +70,38 @@ def main():
                                 else:
                                     break
                 elif (store_menu_option == 3):
-                    Menu.view_order_history(account)
+                    while True:
+                        order_history_select = Menu.view_order_history(account)
+                        if order_history_select:
+                            Menu.view_order(order_history_select)
+                            continue
+                        else:
+                            break
                 elif (store_menu_option == 4):
-                    Menu.account_menu(account)
+                    while True:
+                        account_menu_select = Menu.account_menu(account)
+                        if account_menu_select == 1:
+                            while True:
+                                account_edit_select = Menu.update_account_menu(account)
+                                if account_edit_select == 1:
+                                    Menu.update_email(account)
+                                elif account_edit_select == 2:
+                                    Menu.update_address(account)
+                                elif account_edit_select == 3:
+                                    Menu.update_city(account)
+                                elif account_edit_select == 4:
+                                    Menu.update_state(account)
+                                elif account_edit_select == 5:
+                                    Menu.update_zip(account)
+                                else:
+                                    break
+
+                        elif account_menu_select == 2:
+                            Menu.change_password()
+                            continue
+                        else:
+                            break
+
                 elif (store_menu_option == 0):
                     break
 
@@ -91,14 +120,14 @@ def main():
                 elif admin_menu_option == 2:
                     while True:
                             order = Menu.admin_orders_menu()
-                            if account:
+                            if order:
                                 Menu.admin_view_order(order)
                                 continue
                             break
                 elif admin_menu_option == 3:
                     while True:
                             item = Menu.admin_items_menu()
-                            if account:
+                            if item:
                                 Menu.admin_view_item(item)
                                 continue
                             break
