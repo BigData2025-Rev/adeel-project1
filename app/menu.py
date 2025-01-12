@@ -349,19 +349,33 @@ class Menu:
                 Messages.success("Successfully deleted item")
                 Messages.pause()
         elif user_input == 2:
-            amount = input("How much stock would you like to add? ")
+            try:
+                amount = int(input("How much stock would you like to add? "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_INPUT)
+                return
             if amount <= 0:
                 Messages.error("Cannot add less than 1")
                 Messages.pause()
                 return
             ItemService.add_stock(item, amount)
+            Messages.success(f"Added {amount} from {item.name}.")
+            Messages.pause()
         elif user_input == 3:
-            amount = input("How much stock would you like to add? ")
+            try:
+                amount = int(input("How much stock would you like to remove? "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_INPUT)
+                return
             if amount > item.stock:
-                Messages.error("Cannot remove more than stock")
+                Messages.error(f"Cannot remove more than {item.stock}")
                 Messages.pause()
                 return
             ItemService.remove_stock(item, amount)
+            Messages.success(f"Removed {amount} from {item.name}.")
+            Messages.pause()
         return
     
     def admin_add_item_menu():
@@ -382,18 +396,18 @@ class Menu:
                 continue
             
             try:
-                price = float(input("Price: "))
+                price = int(input("Price: "))
             except ValueError:
                 clear_console()
                 Messages.error(INVALID_INPUT)
                 continue
 
-            if not price or price < 0.01:
+            if not price:
                 clear_console()
                 Messages.error(BLANK_ENTRY)
                 continue
 
-            if price < 0.01:
+            if price <= 0:
                 clear_console()
                 Messages.error("Price cannot be less than $0.01")
                 continue
@@ -415,10 +429,21 @@ class Menu:
                 clear_console()
                 Messages.error(INVALID_INPUT)
                 return
+            try:
+                weight = int(input("Weight: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_INPUT)
             
-            new_item = Item(name, description, price, stock, category)
-            if ItemService.add_item(new_item):
+            if weight < 0.01:
+                clear_console()
+                Messages.error("Weight cannot be less than 0.01!")
+                continue
+            
+            new_item = Item(name, price, description, cat, stock, weight)
+            if ItemService.create_item(new_item):
                 Messages.success("Item added successfully!")
+                print(new_item)
                 Messages.pause()
                 return True
             
@@ -442,15 +467,15 @@ class Menu:
                 clear_console()
                 Messages.error(INVALID_OPTION)
                 continue
-            if user_input not in range(len(accounts) + 1):
+            if user_input not in range(len(orders) + 1):
                 clear_console()
                 Messages.error(INVALID_OPTION)
                 continue
-            return None if user_input == 0 else accounts[user_input - 1]
+            return None if user_input == 0 else orders[user_input - 1]
 
     def admin_view_order(order):
         clear_console()
-        Messages.title(order._id)
+        Messages.title("ORDER")
         print(order)
         Messages.menu_option(1, "Delete Order")
         Messages.menu_option(0, "Return to Orders")
@@ -729,11 +754,10 @@ class Menu:
         clear_console()
         while True:
             Messages.title("UPDATE ACCOUNT")
-            Messages.menu_option(1, "Update Email")
-            Messages.menu_option(2, "Update Street Address")
-            Messages.menu_option(3, "Update City")
-            Messages.menu_option(4, "Update State")
-            Messages.menu_option(5, "Update Zip")
+            Messages.menu_option(1, "Update Street Address")
+            Messages.menu_option(2, "Update City")
+            Messages.menu_option(3, "Update State")
+            Messages.menu_option(4, "Update Zip")
             Messages.menu_option(0, "Return to Menu")
             try:
                 user_input = int(input("Enter selection: "))
@@ -776,31 +800,6 @@ class Menu:
         if success:
             account = AccountService.refresh(account)
             Messages.success("Address updated successfully!")
-            Messages.pause()
-            return account
-        return None
-
-    def update_email(account):
-        email = input("Email: ")
-        if not email:
-            clear_console()
-            Messages.error(BLANK_ENTRY)
-            Messages.pause()
-            return None
-        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        if not re.match(email, email_pattern):
-            clear_console()
-            Messages.error("Invalid email format, please try again...")
-            Messages.pause()
-            return None
-        if AccountService.validate_email(email):
-            Messages.error(EMAIL_TAKEN)
-            Messages.pause()
-            return None
-        success = AccountService.update_email(account, email)
-        if success:
-            account = AccountService.refresh(account)
-            Messages.success("Email updated successfully!")
             Messages.pause()
             return account
         return None

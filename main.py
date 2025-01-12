@@ -5,6 +5,7 @@ from database import items, accounts
 from utils import Messages, logger
 AccountService = AccountService(accounts)
 ItemService = ItemService(items)
+from models import Account
 
 def main():
     
@@ -88,30 +89,25 @@ def main():
                             while True:
                                 account_edit_select = Menu.update_account_menu(account)
                                 if account_edit_select == 1:
-                                    a = Menu.update_email(account)
-                                    if a:
-                                        account = a
-                                elif account_edit_select == 2:
                                     a = Menu.update_address(account)
                                     if a:
                                         account = a
-                                elif account_edit_select == 3:
+                                elif account_edit_select == 2:
                                     a = Menu.update_city(account)
                                     if a:
                                         account = a
-                                elif account_edit_select == 4:
+                                elif account_edit_select == 3:
                                     a = Menu.update_state(account)
                                     if a:
                                         account = a
-                                elif account_edit_select == 5:
+                                elif account_edit_select == 4:
                                     a = Menu.update_zip(account)
                                     if a:
                                         account = a
                                 else:
                                     break
-
                         elif account_menu_select == 2:
-                            Menu.change_password()
+                            Menu.change_password(account)
                             continue
                         else:
                             break
@@ -121,30 +117,36 @@ def main():
 
         elif account and admin_select_option == 1:
             while True:
-                admin_menu_option = Menu.admin_menu(account)
+                admin_menu_option = Menu.admin_menu()
                 if admin_menu_option == 0:
                     break
                 elif admin_menu_option == 1:
                     while True:
-                        acc = Menu.admin_accounts_menu()
-                        if acc:
+                        acc = Menu.admin_account_menu()
+                        if acc is not None:
                             Menu.admin_view_account(acc)
                             continue
                         break
                 elif admin_menu_option == 2:
                     while True:
                             order = Menu.admin_orders_menu()
-                            if order:
+                            if order is not None:
                                 Menu.admin_view_order(order)
                                 continue
                             break
                 elif admin_menu_option == 3:
                     while True:
                             item = Menu.admin_items_menu()
-                            if item:
+                            if item is not None:
                                 Menu.admin_view_item(item)
                                 continue
                             break
+                elif admin_menu_option == 4:
+                    Menu.admin_add_item_menu()
 
+def test_main():
+    adminpass = AccountService.hash_password("admin")
+    admin = Account("Admin", "Account", "admin@admin.com", adminpass, "123 Admin Street", "Admin", "CA", "90503", "United States", True)
+    AccountService.create_account(admin)
 if __name__ == "__main__":
     main()

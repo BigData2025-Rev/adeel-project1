@@ -9,15 +9,16 @@ class Item:
         self.category = category
         self.stock = stock
         self.weight = weight
-    
+
     def __str__(self):
-        return "\n".join([
-        f"  - Name: {item.name}\n"
-        f"    Price: ${item.price:.2f}\n"
-        f"    Category: {item.category}\n"
-        f"    Stock: {item.stock if isinstance(item, Item) else Item.from_dict(item).stock}"
-        for item in self.items
-        ])
+        stock_status = f"{self.stock} left" if self.stock > 0 else "Out of Stock"
+        return (
+            f"Item: {self.name}\n"
+            f"Price: ${self.price:.2f}\n"
+            f"Description: {self.description}\n"
+            f"Category: {self.category}\n"
+            f"Stock: {stock_status}\n"
+        )
 
     def short_str(self):
         return f"{self.name} - ${self.price}"

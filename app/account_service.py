@@ -66,11 +66,6 @@ class AccountService:
         response = self.db.update_one({"_id": account._id}, {"$set": {"zip": zip}})
         return response.modified_count > 0
     
-    def update_email(self, account, email):
-        response = self.db.update_one({"_id": account._id}, {"$set": {"email": email}})
-        return response.modified_count > 0
-
-    
     def delete_account(self, account):
         response = self.db.delete_one({"_id": account._id})
         return response.deleted_count > 0

@@ -16,15 +16,13 @@ class Account:
         self.cart = cart
     
     def __str__(self):
-        account_type = "ADMIN ACCOUNT" if self.admin else "USER ACCOUNT"
         return (
             f"Account Summary\n"
             f"===============\n"
             f"Name:      {self.first_name} {self.last_name}\n"
             f"Email:     {self.email}\n"
             f"Address:   {self.address}\n"
-            f"           {self.city}, {self.state} {self.zip}\n"
-            f"Type:      {account_type}"
+            f"           {self.city}, {self.state} {self.zip}"
         )
     
     def short_str(self):
