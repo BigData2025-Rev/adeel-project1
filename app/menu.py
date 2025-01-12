@@ -3,9 +3,10 @@ from database import accounts, items, orders
 from app.account_service import AccountService
 from app.item_service import ItemService
 from app.order_service import OrderService
-from models import Account
+from models import Account, Item
 import getpass
 import os
+import re
 
 ItemService = ItemService(items)
 AccountService = AccountService(accounts)
@@ -18,6 +19,8 @@ PASSWORD_CHANGE_ERROR = "Password change failed! Please try again...\n"
 STATE_ERROR = "Please enter a valid two character state abbreviation\n"
 EMAIL_TAKEN = "Email already in use! Please login instead\n"
 ACCOUNT_UPDATED = "Successfully updated account!\n"
+BLANK_ENTRY = "Entry cannot be blank, please try again...\n"
+INVALID_INPUT = "Invalid input, please try again..."
 
 category = ["Laptops", "Phones", "Watches", "Headphones", "Accessories", "All Products"]
 
@@ -52,7 +55,7 @@ def get_valid_state() -> str:
     
     while retry_attempts > 0:
         state = input("State: ")
-        if state not in state_abbreviations:
+        if state.lower() not in state_abbreviations:
             Messages.error(STATE_ERROR)
             Messages.error("You have " + str(retry_attempts) + " attempts left")
             continue
@@ -62,7 +65,7 @@ def get_valid_state() -> str:
         Messages.error(PASSWORD_ERROR)
         return None
     
-    return state
+    return state.upper()
 
 def clear_console():
     os.system("cls")
@@ -119,37 +122,72 @@ class Menu:
 
     def register() -> str:
         clear_console()
-        Messages.title("REGISTER")
-        Messages.standard("Please enter your information below")
+        while True:
+            Messages.title("REGISTER")
+            Messages.standard("Please enter your information below")
 
-        first_name = input("First Name: ")
-        last_name = input("Last Name: ")
-        email = input("Email: ").lower()
+            first_name = input("First Name: ")
 
-        if AccountService.validate_email(email):
-            Messages.error(EMAIL_TAKEN)
+            if not first_name:
+                clear_console()
+                Messages.error(BLANK_ENTRY)
+                continue
+
+            last_name = input("Last Name: ")
+            if not last_name:
+                clear_console()
+                Messages.error(BLANK_ENTRY)
+                continue
+
+            email = input("Email: ").lower()
+
+            if not email:
+                clear_console()
+                Messages.error(BLANK_ENTRY)
+                continue
+            email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+            if not re.match(email, email_pattern):
+                clear_console()
+                Messages.error("Invalid email format, please try again...")
+                continue
+            if AccountService.validate_email(email):
+                Messages.error(EMAIL_TAKEN)
+                return None
+
+            password = get_valid_password()
+            if password is None:
+                break
+            password = AccountService.hash_password(password)
+            
+            address = input("Street Address: ")
+
+            if not address:
+                clear_console()
+                Messages.error(BLANK_ENTRY)
+                continue
+
+            city = input("City: ")
+            if not city:
+                clear_console()
+                Messages.error(BLANK_ENTRY)
+                continue
+
+            state = get_valid_state()
+            if state is None:
+                return None
+            
+            zip = input("Zip Code: ")
+            zip_pattern = r'^\d{5}(-\d{4})?$'
+            if not re.match(zip, zip_pattern):
+                clear_console()
+                Messages.error("Invalid zip code, please try again...")
+            
+            newAccount = Account(first_name.title(), last_name.title(), email, password, address, city.title(), state, zip)
+            if AccountService.create_account(newAccount):
+                Messages.success("Account created successfully!")
+                Messages.pause()
+                return newAccount
             return None
-
-        password = get_valid_password()
-        if password is None:
-            return None
-        password = AccountService.hash_password(password)
-        
-        address = input("Street Address: ")
-        city = input("City: ")
-
-        state = get_valid_state()
-        if state is None:
-            return None
-        
-        zip = input("Zip Code: ")
-        
-        newAccount = Account(first_name, last_name, email, password, address, city, state, zip)
-        if AccountService.create_account(newAccount):
-            Messages.success("Account created successfully!")
-            Messages.pause()
-            return newAccount
-        return None
 
     # ADMIN MENUS
 
@@ -173,28 +211,6 @@ class Menu:
                 continue
             return user_input
 
-    def admin_menu(account) -> int:
-        if not account.admin:
-            return None
-        clear_console()
-        while True:
-            Messages.title("ADMIN")
-            Messages.menu_option(1, "Manage Accounts")
-            Messages.menu_option(2, "Manage Orders")
-            Messages.menu_option(3, "Manage Items")
-            Messages.menu_option(0, "Exit")
-            try:
-                user_input = int(input("Enter selection: "))
-            except ValueError:
-                clear_console()
-                Messages.error(INVALID_OPTION)
-                continue
-            if user_input not in [1, 2, 3, 0]:
-                clear_console()
-                Messages.error(INVALID_OPTION)
-                continue
-            return user_input
-
     def admin_menu():
         clear_console()
         while True:
@@ -202,6 +218,7 @@ class Menu:
             Messages.menu_option(1, "Accounts")
             Messages.menu_option(2, "Orders")
             Messages.menu_option(3, "Items")
+            Messages.menu_option(4, "Add Item")
             Messages.menu_option(0, "Return to Main Menu")
             try:
                 user_input = int(input("Enter selection: "))
@@ -209,7 +226,7 @@ class Menu:
                 clear_console()
                 Messages.error(INVALID_OPTION)
                 continue
-            if user_input not in [1, 2, 3, 0]:
+            if user_input not in [1, 2, 3, 4, 0]:
                 clear_console()
                 Messages.error(INVALID_OPTION)
                 continue
@@ -339,6 +356,66 @@ class Menu:
                 return
             ItemService.remove_stock(item, amount)
         return
+    
+    def admin_add_item_menu():
+        clear_console()
+        while True:
+            Messages.title("ADD ITEM")
+
+            name = input("Item Name: ")
+            if not name:
+                clear_console()
+                Messages.error(BLANK_ENTRY)
+                continue
+
+            description = input("Description: ")
+            if not description:
+                clear_console()
+                Messages.error(BLANK_ENTRY)
+                continue
+            
+            try:
+                price = float(input("Price: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_INPUT)
+                continue
+
+            if not price or price < 0.01:
+                clear_console()
+                Messages.error(BLANK_ENTRY)
+                continue
+
+            if price < 0.01:
+                clear_console()
+                Messages.error("Price cannot be less than $0.01")
+                continue
+            
+            try:
+                stock = int(input("Stock: "))
+            except ValueError:
+                clear_console()
+                Messages.error(INVALID_INPUT)
+                continue
+
+            if stock < 0:
+                clear_console()
+                Messages.error("Stock cannot be less than 0")
+
+            print(category)
+            cat = input("Category: ")
+            if not cat or cat not in category:
+                clear_console()
+                Messages.error(INVALID_INPUT)
+                return
+            
+            new_item = Item(name, description, price, stock, category)
+            if ItemService.add_item(new_item):
+                Messages.success("Item added successfully!")
+                Messages.pause()
+                return True
+            
+            return None
 
     def admin_orders_menu():
         clear_console()
@@ -478,7 +555,7 @@ class Menu:
             print(account)
             Messages.menu_option(1, "Edit Information")
             Messages.menu_option(2, "Change Password")
-            Messages.menu_option(0, "Return to Store")
+            Messages.menu_option(0, "Return to Store") 
             try:
                 user_input = int(input("Enter selection: "))
             except ValueError:
@@ -653,6 +730,12 @@ class Menu:
 
     def update_address(account):
         address = input("Street Address: ")
+
+        if not address:
+            clear_console()
+            Messages.error(BLANK_ENTRY)
+            Messages.pause()
+            return None
         success = AccountService.update_address(account, address)
         if success:
             account = AccountService.refresh(account)
@@ -663,6 +746,17 @@ class Menu:
 
     def update_email(account):
         email = input("Email: ")
+        if not email:
+            clear_console()
+            Messages.error(BLANK_ENTRY)
+            Messages.pause()
+            return None
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email, email_pattern):
+            clear_console()
+            Messages.error("Invalid email format, please try again...")
+            Messages.pause()
+            return None
         if AccountService.validate_email(email):
             Messages.error(EMAIL_TAKEN)
             Messages.pause()
@@ -677,6 +771,11 @@ class Menu:
 
     def update_city(account):
         city = input("City: ")
+        if not city:
+            clear_console()
+            Messages.error(BLANK_ENTRY)
+            Messages.pause()
+            return None
         success = AccountService.update_city(account, city)
         if success:
             account = AccountService.refresh(account)
@@ -699,7 +798,17 @@ class Menu:
         return None
 
     def update_zip(account):
-        zip = input("Zip: ")
+        zip = input("Zip Code: ")
+        if not zip:
+            clear_console()
+            Messages.error(BLANK_ENTRY)
+            Messages.pause()
+            return None
+        zip_pattern = r'^\d{5}(-\d{4})?$'
+        if not re.match(zip, zip_pattern):
+            clear_console()
+            Messages.error("Invalid zip code, please try again...")
+            Messages.pause()
         success = AccountService.update_zip(account, zip)
         if success:
             account = AccountService.refresh(account)
