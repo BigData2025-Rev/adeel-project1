@@ -86,15 +86,25 @@ def main():
                             while True:
                                 account_edit_select = Menu.update_account_menu(account)
                                 if account_edit_select == 1:
-                                    Menu.update_email(account)
+                                    a = Menu.update_email(account)
+                                    if a:
+                                        account = a
                                 elif account_edit_select == 2:
-                                    Menu.update_address(account)
+                                    a = Menu.update_address(account)
+                                    if a:
+                                        account = a
                                 elif account_edit_select == 3:
-                                    Menu.update_city(account)
+                                    a = Menu.update_city(account)
+                                    if a:
+                                        account = a
                                 elif account_edit_select == 4:
-                                    Menu.update_state(account)
+                                    a = Menu.update_state(account)
+                                    if a:
+                                        account = a
                                 elif account_edit_select == 5:
-                                    Menu.update_zip(account)
+                                    a = Menu.update_zip(account)
+                                    if a:
+                                        account = a
                                 else:
                                     break
 
