@@ -1,11 +1,11 @@
-from models import Order, Account
+from models import Order
 
 class OrderService:
     def __init__(self, db):
         self.db = db
     
     def get_orders(self, account):
-        return [Order.from_dict(Order, order) for order in self.db.find({"account": account._id})]
+        return [Order.from_dict(order) for order in self.db.find({"account": account._id})]
     
     def create_order(self, order):
         self.db.insert_one(order.to_dict())
@@ -15,10 +15,10 @@ class OrderService:
         return Order.from_dict(Order, self.db.find_one({"_id": order_id}))
 
     def get_all_orders(self):
-        return [Order.from_dict(Order, order) for order in self.db.find()]
+        return [Order.from_dict(order) for order in self.db.find()]
     
     def delete_order(self, order):
         self.db.delete_one({"_id": order._id})
     
     def get_orders_by_account(self, account_email):
-        return [Order.from_dict(Order, order) for order in self.db.find({"account.email": account_email})]
+        return [Order.from_dict(order) for order in self.db.find({"account.email": account_email})]

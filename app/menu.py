@@ -249,7 +249,7 @@ class Menu:
                 Messages.pause()
                 break
             for index, account in enumerate(accounts):
-                Messages.option(index + 1, account.short_str())
+                Messages.menu_option(index + 1, account.short_str())
             Messages.menu_option(0, "Return to Menu")
             try:
                 user_input = int(input("Enter selection: "))
@@ -311,7 +311,7 @@ class Menu:
                 Messages.pause()
                 break
             for index, item in enumerate(items):
-                Messages.option(index + 1, item.short_str())
+                Messages.menu_option(index + 1, item.short_str())
             Messages.menu_option(0, "Return to Menu")
             try:
                 user_input = int(input("Enter selection: "))
@@ -434,7 +434,7 @@ class Menu:
                 Messages.pause()
                 break
             for index, order in enumerate(orders):
-                Messages.option(index + 1, order.short_str())
+                Messages.menu_option(index + 1, order.short_str())
             Messages.menu_option(0, "Return to Menu")
             try:
                 user_input = int(input("Enter selection: "))
@@ -585,7 +585,7 @@ class Menu:
                 Messages.pause()
                 break
             for index, order in enumerate(orders):
-                Messages.option(index + 1, order.short_str())
+                Messages.menu_option(index + 1, order.short_str())
             Messages.menu_option(0, "Return to Menu")
             try:
                 user_input = int(input("Enter selection: "))
@@ -609,13 +609,14 @@ class Menu:
                 Messages.standard("Please remove this item and try again!")
                 Messages.pause()
                 return None
-        total = sum(item.price for item in cart)
+        subtotal = sum(item.price for item in cart)
         shipping = sum(item.weight_to_shipprice() for item in cart)
-        now = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+        total = subtotal + shipping
+        now = datetime.now()
         delivery_date = now + timedelta(days=3)
-        order = Order(account, account.cart, total, shipping, delivery_date)
+        order = Order(account.to_dict(), AccountService.get_cart_dict(account), subtotal, total, shipping, delivery_date.strftime("%m/%d/%Y, %H:%M:%S"), now.strftime("%m/%d/%Y, %H:%M:%S"))
+        success = OrderService.create_order(order)
         if success:
-            success = OrderService.create_order(account, cart, total, shipping, delivery_date)
             for item in cart:
                 ItemService.remove_stock(item, 1)
                 AccountService.remove_from_cart(account, item)

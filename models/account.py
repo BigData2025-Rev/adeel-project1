@@ -16,7 +16,16 @@ class Account:
         self.cart = cart
     
     def __str__(self):
-        return f"{self.first_name} {self.last_name} - {self.email}\n{self.address}\n{self.city}, {self.state} {self.zip}\nADMIN ACCOUNT" if self.admin else f"{self.first_name} {self.last_name} - {self.email}\n{self.address}\n{self.city}, {self.state} {self.zip}"
+        account_type = "ADMIN ACCOUNT" if self.admin else "USER ACCOUNT"
+        return (
+            f"Account Summary\n"
+            f"===============\n"
+            f"Name:      {self.first_name} {self.last_name}\n"
+            f"Email:     {self.email}\n"
+            f"Address:   {self.address}\n"
+            f"           {self.city}, {self.state} {self.zip}\n"
+            f"Type:      {account_type}"
+        )
     
     def short_str(self):
         return f"{self.email} - {self.first_name}"
@@ -34,5 +43,5 @@ class Account:
         return self.__dict__
     
     @classmethod
-    def from_dict(self, cls, data):
+    def from_dict(cls, data):
         return cls(**data)
