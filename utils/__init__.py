@@ -1,3 +1,3 @@
-from .messages import Messages
+from .messages import Messages, Errors
 
-__all__ = ["Messages"]
+__all__ = ["Messages", "Errors"]

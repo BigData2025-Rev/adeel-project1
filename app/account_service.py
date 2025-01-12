@@ -33,34 +33,50 @@ class AccountService:
         return [Account.from_dict(Account, account) for account in self.db.find()]
     
     def add_to_cart(self, account, item):
-        self.db.update_one({"_id": account._id}, {"$push": {"cart": item.to_dict()}})
+        response = self.db.update_one({"_id": account._id}, {"$push": {"cart": item.to_dict()}})
+        return response.modified_count > 0
     
     def remove_from_cart(self, account, item):
-        self.db.update_one({"_id": account._id}, {"$pull": {"cart": item.to_dict()}})
+        response = self.db.update_one({"_id": account._id}, {"$pull": {"cart": item.to_dict()}})
+        return response.modified_count > 0
 
     def get_cart(self, account):
         return [Item.from_dict(Item,item) for item in self.db.find_one({"_id": account._id})["cart"]]
     
     def change_password(self, account, password):
-        self.db.update_one({"_id": account._id}, {"$set": {"password": self.hash_password(password)}})
-
+        response = self.db.update_one({"_id": account._id}, {"$set": {"password": self.hash_password(password)}})
+        return response.modified_count > 0
+    
     def update_address(self, account, address):
-        self.db.update_one({"_id": account._id}, {"$set": {"address": address}})
+        response = self.db.update_one({"_id": account._id}, {"$set": {"address": address}})
+        return response.modified_count > 0
     
     def update_city(self, account, city):
-        self.db.update_one({"_id": account._id}, {"$set": {"city": city}})
+        response = self.db.update_one({"_id": account._id}, {"$set": {"city": city}})
+        return response.modified_count > 0
 
     def update_state(self, account, state):
-        self.db.update_one({"_id": account._id}, {"$set": {"state": state}})
+        response = self.db.update_one({"_id": account._id}, {"$set": {"state": state}})
+        return response.modified_count > 0
 
     def update_zip(self, account, zip):
-        self.db.update_one({"_id": account._id}, {"$set": {"zip": zip}})
+        response = self.db.update_one({"_id": account._id}, {"$set": {"zip": zip}})
+        return response.modified_count > 0
     
     def update_email(self, account, email):
-        self.db.update_one({"_id": account._id}, {"$set": {"email": email}})
+        response = self.db.update_one({"_id": account._id}, {"$set": {"email": email}})
+        return response.modified_count > 0
+
     
     def delete_account(self, account):
-        self.db.delete_one({"_id": account._id})
+        response = self.db.delete_one({"_id": account._id})
+        return response.deleted_count > 0
 
     def make_admin(self, account):
-        self.db.update_one({"_id": account._id}, {"$set": {"admin": True}})
+        response = self.db.update_one({"_id": account._id}, {"$set": {"admin": True}})
+        return response.modified_count > 0
+    
+    def refresh(self, account):
+        email = account.email
+        account = self.db.find_one({"email": email.lower()})
+        return Account.from_dict(Account, account)

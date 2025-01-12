@@ -7,6 +7,8 @@ ItemService = ItemService(items)
 from utils import Messages
 AccountService = AccountService(accounts)
 
+account = None
+
 def main():
     while True:
         # MAIN MENU OPTIONS
