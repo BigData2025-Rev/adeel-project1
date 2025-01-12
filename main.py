@@ -30,6 +30,7 @@ def main():
         # IF ADMIN PROMPT FOR WHICH MENU
         if account and account.admin == True:
             admin_select_option = Menu.admin_select_option()
+            logger.info("Admin Selected Menu")
         
         # REGULAR USER MENU
         if account and admin_select_option == 2:
@@ -52,6 +53,7 @@ def main():
                                 if carted:
                                     Messages.success("Item added to cart!")
                                     Messages.pause()
+                                    logger.info(f"User added item to cart {[account.email]}")
                                 else:
                                     break
                 elif (store_menu_option == 2):
@@ -63,6 +65,7 @@ def main():
                             success = Menu.checkout(account)
                             if success:
                                 Messages.success("Checkout successful!")
+                                logger.info(f"User checked out {[account.email]}")
                                 Messages.pause()
                             break
                         elif user_checkout_option == 2:
@@ -92,16 +95,20 @@ def main():
                                     a = Menu.update_address(account)
                                     if a:
                                         account = a
+                                        logger.info(f"User updated address {[account.email]}")
                                 elif account_edit_select == 2:
                                     a = Menu.update_city(account)
+                                    logger.info(f"User updated city {[account.email]}")
                                     if a:
                                         account = a
                                 elif account_edit_select == 3:
                                     a = Menu.update_state(account)
+                                    logger.info(f"User updated state {[account.email]}")
                                     if a:
                                         account = a
                                 elif account_edit_select == 4:
                                     a = Menu.update_zip(account)
+                                    logger.info(f"User updated zip {[account.email]}")
                                     if a:
                                         account = a
                                 else:
@@ -143,10 +150,7 @@ def main():
                             break
                 elif admin_menu_option == 4:
                     Menu.admin_add_item_menu()
+                    logger.info(f"Admin added item {[account.email]}")
 
-def test_main():
-    adminpass = AccountService.hash_password("admin")
-    admin = Account("Admin", "Account", "admin@admin.com", adminpass, "123 Admin Street", "Admin", "CA", "90503", "United States", True)
-    AccountService.create_account(admin)
 if __name__ == "__main__":
     main()
