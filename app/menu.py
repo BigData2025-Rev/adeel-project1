@@ -3,10 +3,11 @@ from database import accounts, items, orders
 from app.account_service import AccountService
 from app.item_service import ItemService
 from app.order_service import OrderService
-from models import Account, Item
+from models import Account, Item, Order
 import getpass
 import os
 import re
+from datetime import datetime, timedelta
 
 ItemService = ItemService(items)
 AccountService = AccountService(accounts)
@@ -598,8 +599,33 @@ class Menu:
                 continue
             return None if user_input == 0 else orders[user_input - 1]
 
-    def checkout():
+    def checkout(account):
         clear_console()
+        cart = AccountService.get_cart(account)
+        for item in cart:
+            if item.stock == 0:
+                Messages.error("Cannot check out with out of stock item!")
+                print(item)
+                Messages.standard("Please remove this item and try again!")
+                Messages.pause()
+                return None
+        total = sum(item.price for item in cart)
+        shipping = sum(item.weight_to_shipprice() for item in cart)
+        now = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+        delivery_date = now + timedelta(days=3)
+        order = Order(account, account.cart, total, shipping, delivery_date)
+        if success:
+            success = OrderService.create_order(account, cart, total, shipping, delivery_date)
+            for item in cart:
+                ItemService.remove_stock(item, 1)
+                AccountService.remove_from_cart(account, item)
+            print(order)
+            Messages.success("Order placed!")
+            Messages.pause()
+
+        else:
+            Messages.error("An unknown error occured, please try again...")
+            Messages.pause()
 
     def remove_cart_menu(account):
         clear_console()
