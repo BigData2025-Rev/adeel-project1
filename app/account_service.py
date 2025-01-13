@@ -47,7 +47,7 @@ class AccountService:
         return self.db.find_one({"_id": account._id})["cart"]
     
     def change_password(self, account, password):
-        response = self.db.update_one({"_id": account._id}, {"$set": {"password": self.hash_password(password)}})
+        response = self.db.update_one({"_id": account._id}, {"$set": {"password": password}})
         return response.modified_count > 0
     
     def update_address(self, account, address):

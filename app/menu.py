@@ -6,7 +6,6 @@ from app.order_service import OrderService
 from models import Account, Item, Order
 import getpass
 import os
-import re
 from datetime import datetime, timedelta
 
 ItemService = ItemService(items)
@@ -35,17 +34,18 @@ state_abbreviations = [
 
 def get_valid_password() -> str:
     retry_attempts = 3
-
-    while retry_attempts > 0:
+    password = ""
+    while retry_attempts >= 0:
         password = getpass.getpass("Password: ")
         confirm_password = getpass.getpass("Confirm Password: ")
         if password != confirm_password:
             Messages.error(PASS_DO_NOT_MATCH)
+            retry_attempts -= 1
             Messages.error("You have " + str(retry_attempts) + " attempts left")
             continue
         break
     
-    if retry_attempts == 0:
+    if retry_attempts < 0:
         Messages.error(PASSWORD_ERROR)
         return None
 
@@ -53,16 +53,17 @@ def get_valid_password() -> str:
 
 def get_valid_state() -> str:
     retry_attempts = 3
-    
-    while retry_attempts > 0:
+    state = ""
+    while retry_attempts >= 0:
         state = input("State: ")
-        if state.lower() not in state_abbreviations:
+        if state.upper() not in state_abbreviations:
             Messages.error(STATE_ERROR)
+            retry_attempts -= 1
             Messages.error("You have " + str(retry_attempts) + " attempts left")
             continue
         break
     
-    if retry_attempts == 0:
+    if retry_attempts < 0:
         Messages.error(PASSWORD_ERROR)
         return None
     
@@ -103,7 +104,7 @@ class Menu:
     def login() -> str:
         retry_attemps = 3
         clear_console()
-        while retry_attemps > 0:
+        while retry_attemps >= 0:
             Messages.title("LOGIN")
             Messages.standard("Please enter your information below")
 
@@ -113,14 +114,14 @@ class Menu:
             if account is None:
                 clear_console()
                 Messages.error("Invalid email or password! Please try again...\n\n")
-                Messages.error("You have " + str(retry_attemps) + " attempts left")
                 retry_attemps -= 1
+                Messages.error("You have " + str(retry_attemps) + " attempts left")
                 continue
             Messages.success("Logged in successfully!")
             logger.info(f"Logged in [{account.email}]")
             Messages.pause()
             return account
-        if retry_attemps == 0:
+        if retry_attemps < 0:
             Messages.error("Unable to login, please try again later")
             logger.info("Failed log-in attempt")
             Messages.pause()
@@ -151,11 +152,6 @@ class Menu:
                 clear_console()
                 Messages.error(BLANK_ENTRY)
                 continue
-            email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-            if not re.match(email, email_pattern):
-                clear_console()
-                Messages.error("Invalid email format, please try again...")
-                continue
             if AccountService.validate_email(email):
                 Messages.error(EMAIL_TAKEN)
                 return None
@@ -183,10 +179,6 @@ class Menu:
                 return None
             
             zip = input("Zip Code: ")
-            zip_pattern = r'^\d{5}(-\d{4})?$'
-            if not re.match(zip, zip_pattern):
-                clear_console()
-                Messages.error("Invalid zip code, please try again...")
             
             newAccount = Account(first_name.title(), last_name.title(), email, password, address, city.title(), state, zip)
             if AccountService.create_account(newAccount):
@@ -780,7 +772,7 @@ class Menu:
                 print(PASSWORD_CHANGE_ERROR)
                 return None
             password = AccountService.hash_password(password)
-            success = AccountService.update_password(account, password)
+            success = AccountService.change_password(account, password)
             if success:
                 account = AccountService.refresh(account)
                 Messages.success("Password updated successfully!")
@@ -839,11 +831,6 @@ class Menu:
             Messages.error(BLANK_ENTRY)
             Messages.pause()
             return None
-        zip_pattern = r'^\d{5}(-\d{4})?$'
-        if not re.match(zip, zip_pattern):
-            clear_console()
-            Messages.error("Invalid zip code, please try again...")
-            Messages.pause()
         success = AccountService.update_zip(account, zip)
         if success:
             account = AccountService.refresh(account)

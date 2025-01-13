@@ -5,15 +5,12 @@ from database import items, accounts
 from utils import Messages, logger
 AccountService = AccountService(accounts)
 ItemService = ItemService(items)
-from models import Account
 
 def main():
-    
     global account
 
     while True:
         # MAIN MENU OPTIONS
-        logger.info("Start Application")
         menu_option = Menu.main_menu()
 
         if menu_option == 1:
@@ -22,7 +19,6 @@ def main():
             account = Menu.register()
         elif menu_option == 0:
             Messages.standard("Have a good day!")
-            logger.info("Ending Application")
             sys.exit()
         
         admin_select_option = 2
@@ -30,7 +26,7 @@ def main():
         # IF ADMIN PROMPT FOR WHICH MENU
         if account and account.admin == True:
             admin_select_option = Menu.admin_select_option()
-            logger.info("Admin Selected Menu")
+            logger.info(f"Admin Selected Menu {[account.email]}")
         
         # REGULAR USER MENU
         if account and admin_select_option == 2:
@@ -114,8 +110,10 @@ def main():
                                 else:
                                     break
                         elif account_menu_select == 2:
-                            Menu.change_password(account)
-                            continue
+                            a = Menu.change_password(account)
+                            logger.info(f"User updated password {[account.email]}")
+                            if a:
+                                account = a
                         else:
                             break
 
@@ -153,4 +151,6 @@ def main():
                     logger.info(f"Admin added item {[account.email]}")
 
 if __name__ == "__main__":
+    logger.info("Start Application")
     main()
+    logger.info("Ending Application")
